@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import App from "./App";
+import PageLayout from "./PageLayout";
 import Home from "./components/Home";
 import About from "./components/About";
 import Leaderboards from "./components/Leaderboards";
@@ -10,7 +10,7 @@ const RouteSwitch = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App />}>
+        <Route path="/" element={<PageLayout />}>
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="leaderboards" element={<Leaderboards />}>
