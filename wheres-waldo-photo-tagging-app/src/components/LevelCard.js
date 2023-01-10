@@ -1,5 +1,6 @@
 import './LevelCard.css';
 import waldo from './whereswaldo.jpg';
+import {useNavigate} from 'react-router-dom';
 
 function LevelCard({ levelObj }) {
   const { 
@@ -13,8 +14,11 @@ function LevelCard({ levelObj }) {
   const imgSrc = `../levels/${levelID}/${levelID}-photo.jpg`;
   console.log(imgSrc);
 
+  const navigate = useNavigate();
+  const handleClick = () => navigate(`/${levelID}`);
+
   return (
-    <div className="LevelCard">
+    <div className="LevelCard" onClick={handleClick}>
       <img 
         className="level-card-photo-preview" 
         src={waldo}
