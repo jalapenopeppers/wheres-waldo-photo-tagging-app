@@ -1,7 +1,7 @@
 export const LevelObj = {
   'level': 'Level 4',
-  'title': 'Volcano Village',
-  'difficulty': 'Medium',
-  'description': 'Find the 3 characters in the volcano village.',
+  'title': 'Seaside Metropolis',
+  'difficulty': 'Hard',
+  'description': 'Find the 3 characters in this large seaside metropolis.',
   'levelID': 'level-4',
 };
