@@ -18,16 +18,26 @@
 }
 
 .level-header {
+  box-sizing: border-box;
   width: 100%;
   padding: 20px;
+  /* right: 10px; */
   position: fixed;
   color: white;
   background-color: rgb(64, 64, 64);
   display: grid;
   grid-template-columns: repeat(3, max-content);
   justify-content: space-between;
+  align-items: center;
 }
 
+.target-images-container {
+  /* padding-right: 50px; */
+  display: grid;
+  grid-template-columns: repeat(4, max-content);
+  align-items: center;
+  gap: 10px;
+}
 .character-img {
   width: 30px;
   height: 30px;

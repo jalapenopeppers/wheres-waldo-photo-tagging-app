@@ -4,6 +4,11 @@ import { useState, useEffect } from 'react';
 
 import Timer from './Timer';
 
+// TEST
+import char1 from '../levels/level-2/character-1-photo.jpg';
+import char2 from '../levels/level-2/character-2-photo.jpg';
+import char3 from '../levels/level-2/character-3-photo.jpg';
+
 async function importLevel(levelID) {
   let module = {};
   try {
@@ -11,18 +16,36 @@ async function importLevel(levelID) {
   } catch (e) {
     console.log(e);
   }
-  // Returned array is actually a Promise
+  // Returned object is actually a Promise
   return module.LevelObj;
 }
-async function importImage(levelID) {
+async function importLevelImage(levelID) {
   let module = {};
   try {
     module = await import(`../levels/${levelID}/${levelID}-photo.jpg`);
   } catch (e) {
     console.log(e);
   }
-  // Returned array is actually a Promise
+  // Returned object is actually a Promise
   return module;
+}
+async function importCharacterImages(levelID) {
+  let module1 = {};
+  let module2 = {};
+  let module3 = {};
+  try {
+    module1 = await import(`../levels/${levelID}/character-1-photo.jpg`);
+    module2 = await import(`../levels/${levelID}/character-2-photo.jpg`);
+    module3 = await import(`../levels/${levelID}/character-3-photo.jpg`);
+  } catch (e) {
+    console.log(e);
+  }
+  // Returned object is actually a Promise
+  return [
+    module1.default,
+    module2.default,
+    module3.default
+  ];
 }
 
 function Level() {
@@ -31,19 +54,23 @@ function Level() {
 
   const [currState, setCurrState] = useState('loading');
   const [levelImg, setLevelImg] = useState('');
+  const [characterImgArray, setCharacterImgArray] = useState([]);
   const [levelObj, setLevelObj] = useState({});
   const levelObjPromise = importLevel(levelID);
   useEffect(() => {
     levelObjPromise
       .then((obj) => {
-        // console.log(obj);
-        // setCurrState('done');
+        console.log(obj);
         setLevelObj(obj);
-        return importImage(obj.levelID);
+        return importLevelImage(obj.levelID);
         })
       .then((img) => {
         // console.log(img.default);
         setLevelImg(img.default);
+        return importCharacterImages(levelID);
+      })
+      .then((characterImgArray) => {
+        setCharacterImgArray(characterImgArray);
         setCurrState('done');
       });
   }, []);
@@ -63,9 +90,9 @@ function Level() {
             <Timer />
             <div className="target-images-container">
               Find these:
-              <img className="character-img" src="" alt="Character 1" />
-              <img className="character-img" src="" alt="Character 2" />
-              <img className="character-img" src="" alt="Character 3" />
+              <img className="character-img" src={characterImgArray[0]} alt="Character 1" />
+              <img className="character-img" src={characterImgArray[1]} alt="Character 2" />
+              <img className="character-img" src={characterImgArray[2]} alt="Character 3" />
             </div>
           </div>
         </div>
