@@ -11,6 +11,8 @@ async function importLevels() {
     try {
       const module = await import(`../levels/level-${levelCounter}/level-${levelCounter}.js`);
       // console.log(module.LevelObj);
+      const module2 = await import(`../levels/level-${levelCounter}/level-${levelCounter}-photo.jpg`);
+      module.LevelObj.imgSrc = module2.default;
       levelObjsArray.push(module.LevelObj);
       levelCounter++;
     } catch {

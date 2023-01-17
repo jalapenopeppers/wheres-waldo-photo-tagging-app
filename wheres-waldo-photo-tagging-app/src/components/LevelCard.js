@@ -8,10 +8,11 @@ function LevelCard({ levelObj }) {
     difficulty, 
     level, 
     levelID, 
-    title 
+    title,
+    imgSrc
   } = levelObj;
 
-  const imgSrc = `../levels/${levelID}/${levelID}-photo.jpg`;
+  // const imgSrc = `../levels/${levelID}/${levelID}-photo.jpg`;
   console.log(imgSrc);
 
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ function LevelCard({ levelObj }) {
     <div className="LevelCard" onClick={handleClick}>
       <img 
         className="level-card-photo-preview" 
-        src={waldo}
+        src={imgSrc}
         alt= 'Level preview'
       />
       <h4>{level}: {title} ({difficulty})</h4>

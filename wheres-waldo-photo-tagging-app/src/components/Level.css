@@ -1,0 +1,59 @@
+.Level {
+  width: 100vw;
+  height: 100vh;
+  /* background-image: url('../levels/level-1/level-1-photo.jpg');
+  background-size: contain cover;
+  background-attachment: local;
+  background-color: rgb(174, 174, 174); */
+}
+
+.level-img {
+  max-width: 100vw;
+  width: 100vw;
+  /* height: auto; */
+  object-fit: fill;
+  position: absolute;
+  /* size: contain cover; */
+  z-index: -1;
+}
+
+.level-header {
+  width: 100%;
+  padding: 20px;
+  position: fixed;
+  color: white;
+  background-color: rgb(64, 64, 64);
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  justify-content: space-between;
+}
+
+.character-img {
+  width: 30px;
+  height: 30px;
+}
+
+.notification-box {
+  visibility: hidden;
+  position: fixed;
+  top: 100px;
+  width: 100%;
+  font-size: 18px;
+  display: grid;
+  justify-content: space-evenly;
+}
+.notification-text {
+  width: max-content;
+  padding: 10px 20px;
+  color: white;
+  background-color: rgb(64, 64, 64);
+  border: 2px solid red;
+  box-shadow: 0 0 0 2px red;
+  border-radius: 10px;
+}
+
+.go-home-button {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+}
