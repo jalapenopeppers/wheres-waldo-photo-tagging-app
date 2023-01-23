@@ -2,6 +2,10 @@ import './Level.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
+// Firebase
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../index.js';
+
 import Timer from './Timer';
 import CharacterDropDown from './CharacterDropDown';
 
@@ -49,6 +53,23 @@ async function importCharacterImages(levelID) {
   ];
 }
 
+/*
+  Gets character coords from fireStore given a levelObj
+  Returns object with each character's coords in the image
+  */ 
+async function importCharacterCoords(levelObj) {
+  const docRef = doc(db, `/levels/${levelObj.levelID}/characters/characters-coords`);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    // console.log("Document data:", docSnap.data());
+    return await docSnap.data();
+  } else {
+    // doc.data() will be undefined in this case
+    console.log("No such document!");
+    return null;
+  }
+}
+
 function Level() {
   const urlParams = useParams();
   const levelID = urlParams.levelID;
@@ -59,12 +80,14 @@ function Level() {
   const [levelImg, setLevelImg] = useState('');
   const [characterImgArray, setCharacterImgArray] = useState([]);
   const [levelObj, setLevelObj] = useState({});
+  const [charactersCoords, setCharactersCoords] = useState({});
   const levelObjPromise = importLevel(levelID);
   useEffect(() => {
     levelObjPromise
       .then((obj) => {
         console.log(obj);
         setLevelObj(obj);
+        setCharactersCoords(importCharacterCoords(obj));
         return importLevelImage(obj.levelID);
         })
       .then((img) => {
@@ -148,6 +171,27 @@ function Level() {
     }
     console.log(targetingBoxArr);
   }
+  const isCharInTargetBox = (characterInt) => {
+    const boxX = targetingBoxArr.at(-1).boxX;
+    const boxY = targetingBoxArr.at(-1).boxY;
+    console.log(charactersCoords);
+    const correctCharX = charactersCoords[`character-${characterInt}`][0];
+    const correctCharY = charactersCoords[`character-${characterInt}`][1];
+    if (
+      correctCharX > (boxX - 27) &&
+      correctCharX < (boxX + 27) &&
+      correctCharY > (boxY - 27) &&
+      correctCharY < (boxX + 27)
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  const handleMenuItemClickCallback = (e, characterInt) => {
+    console.log(`Clicked character-${characterInt}`);
+    console.log(`Is character in target box?: ${isCharInTargetBox(characterInt)}`);
+  }
 
   return (
     <div className="Level">
@@ -185,6 +229,8 @@ function Level() {
           'pageY': (targetingBoxArr.length) > 0 ? targetingBoxArr.at(-1).boxY : null
         }}
         characterImgArray={characterImgArray}
+        charactersObj={levelObj.characters === undefined ? {} : levelObj.characters}
+        menuItemClickCallback={handleMenuItemClickCallback}
       />
     </div>
   );

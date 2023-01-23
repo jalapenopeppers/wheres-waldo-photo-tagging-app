@@ -1,5 +1,7 @@
 :root {
   --closest-foreground-z-index: 2;
+
+  overflow-x: hidden;
 }
 
 .Level {
