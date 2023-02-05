@@ -64,6 +64,15 @@
   font-size: 18px;
   display: grid;
   justify-content: space-evenly;
+  /* animation: popInFadeOut 7s linear forwards; */
+}
+/* .display-notification-box {
+  animation: popInFadeOut 7s linear forwards;
+} */
+@keyframes popInFadeOut {
+  0% { opacity: 1;}
+  75% { opacity: 1;}
+  100% { opacity: 0;}
 }
 .notification-text {
   width: max-content;
@@ -89,6 +98,9 @@
   border: 2px solid rgba(255, 255, 255, 0.523);
   border-radius: 50%;;
 }
+.targeting-box.valid-box {
+  background-color: rgba(179, 179, 179, 0.626);
+}
 
 .character-drop-down-menu {
   /* display: none; */
@@ -113,4 +125,8 @@
 .character-menu-container:hover {
   background-color: rgba(255, 255, 255, 0.523);
   cursor: pointer;
+}
+
+.add-to-leaderboard-box {
+  visibility: hidden;
 }

@@ -79,7 +79,12 @@ function Level() {
   const levelID = urlParams.levelID;
 
   const [showTargetingBox, setShowTargetingBox] = useState(false);
-  const [targetingBoxArr, setTargetingBoxArr] = useState([]);
+  const [targetingBoxArr, _setTargetingBoxArr] = useState([]);
+  const targetingBoxArrRef = useRef(targetingBoxArr);
+  const setTargetingBoxArr = (newTargetingBoxArr) => {
+    targetingBoxArrRef.current = newTargetingBoxArr;
+    _setTargetingBoxArr(newTargetingBoxArr);
+  }
   const [currState, setCurrState] = useState('loading');
   const [levelImg, setLevelImg] = useState('');
   const [characterImgArray, setCharacterImgArray] = useState([]);
@@ -127,7 +132,8 @@ function Level() {
       // });
   }, []);
 
-  const handleWindowResize = (e) => {
+  // Recalculates character coords after window is resized
+  const recalcCharCoords = () => {
     const levelImg = document.querySelector('img.level-img');
     const levelImgClientRects = levelImg.getClientRects()[0];
     const newWidth = levelImgClientRects.width;
@@ -154,17 +160,48 @@ function Level() {
     `);
     setCharactersCoords(newCharactersCoords);
   }
-  useEffect(() => {
-    // window.addEventListener('resize', handleWindowResize);
-    // return () => {
-    //   window.removeEventListener('resize', handleWindowResize);
-    // }
-    let resizeID;
-    window.onresize = () => {
-      clearTimeout(resizeID);
-      resizeID = setTimeout(handleWindowResize, 500);
+  const recalcBoxCoords = () => {
+    let newWidth = document.documentElement.scrollWidth;
+    let newHeight = document.documentElement.scrollHeight;
+    let newTargetingBoxArr = [];
+    // console.log('recalculating box coords...');
+    // console.log(targetingBoxArrRef);
+    for (let i = 0; i < targetingBoxArrRef.current.length; i++) {
+      let boxObj = targetingBoxArrRef.current[i];
+      let newBoxObj = {
+        ...boxObj,
+        'boxX': boxObj.initialBoxX.map(0, boxObj.initialScrollWidth, 0, newWidth),
+        'boxY': boxObj.initialBoxY.map(0, boxObj.initialScrollHeight, 0, newHeight)
+      }
+      newTargetingBoxArr.push(newBoxObj);
+
+      // move the box in the DOM
+      let boxElem = document.querySelector(`.${newBoxObj.boxID}.valid-box`);
+      boxElem.style.top = `${newBoxObj.boxX}px`;
+      boxElem.style.left = `${newBoxObj.boxY}px`;
+      console.log(`Old boxX: ${boxObj.boxX}}, new boxX: ${newBoxObj.boxX}`);
+      console.log(`Old boxY: ${boxObj.boxY}}, new boxY: ${newBoxObj.boxY}`);
     }
-    return () => window.onresize = null;
+    setTargetingBoxArr(newTargetingBoxArr);
+  }
+  useEffect(() => {
+    let resizeID;
+    const recalcCharCoordsOnResize = () => {
+      clearTimeout(resizeID);
+      resizeID = setTimeout(recalcCharCoords, 500);
+    }
+    window.addEventListener('resize', recalcCharCoordsOnResize);
+
+    // Recalculate targeting box coords and move them to new coords
+    // const recalcBoxCoordsOnResize = () => {
+    //   recalcBoxCoords();
+    // }
+    // window.addEventListener('resize', recalcBoxCoordsOnResize);
+
+    return () => {
+      window.removeEventListener('resize', recalcCharCoordsOnResize);
+      // window.removeEventListener('resize', recalcBoxCoordsOnResize);
+    }
   }, []);
 
   const navigate = useNavigate();
@@ -206,16 +243,24 @@ function Level() {
   const adjustTargetingBox = (e) => {
     if (!showTargetingBox) {
       setShowTargetingBox(true);
+      // console.log(e);
       const boxX = e.pageX;
       const boxY = e.pageY;
       let newTargetingBoxArr = targetingBoxArr.concat([{
+        'boxID': `box-${targetingBoxArr.length + 1}`, // used as a class name
+        'isCorrect': false,
         'character': null,
         boxX,
-        boxY
+        boxY,
+        // entries below are used for recalc of coords on window resize
+        'initialScrollWidth': document.documentElement.scrollWidth,
+        'initialScrollHeight': document.documentElement.scrollHeight,
+        'initialBoxX': boxX,
+        'initialBoxY': boxY
       }]);
       setTargetingBoxArr(newTargetingBoxArr);
       const boxElem = document.createElement('div');
-      boxElem.className = `targeting-box box-${newTargetingBoxArr.length}`;
+      boxElem.className = `targeting-box ${newTargetingBoxArr.at(-1).boxID}`;
       boxElem.style['position'] = 'absolute'
       boxElem.style['top'] = String(boxY - 27) + 'px';
       boxElem.style['left'] = String(boxX - 27) + 'px';
@@ -224,15 +269,19 @@ function Level() {
       levelContainer.appendChild(boxElem);
     } else {
       setShowTargetingBox(false);
-      // Adjust array to remove box
-      const newTargetingBoxArr = [];
-      for (let i = 0; i < targetingBoxArr.length - 1; i++) newTargetingBoxArr.push(targetingBoxArr[i]);
-      setTargetingBoxArr(newTargetingBoxArr);
+      if (!targetingBoxArr.at(-1).isCorrect) {
+        // If last box was not correct, adjust array to remove last placed box
+        const newTargetingBoxArr = [];
+        for (let i = 0; i < targetingBoxArr.length - 1; i++) newTargetingBoxArr.push(targetingBoxArr[i]);
+        setTargetingBoxArr(newTargetingBoxArr);
+      }
       
       // Remove from DOM
-      const lastBoxID = targetingBoxArr.length;
-      const lastBox = document.querySelector(`.box-${lastBoxID}`);
-      lastBox.remove();
+      // const lastBoxID = targetingBoxArr.length;
+      // const lastBox = document.querySelector(`.box-${lastBoxID}`);
+      // lastBox.remove();
+      const targetingBox = document.querySelector('.targeting-box');
+      targetingBox.remove();
     }
     // console.log(targetingBoxArr);
   }
@@ -256,12 +305,56 @@ function Level() {
   const handleMenuItemClickCallback = (e, characterInt) => {
     console.log(`Clicked character-${characterInt}`);
     console.log(`Is character in target box?: ${isCharInTargetBox(characterInt)}`);
-    // CONTINUE 
-    // If correct, place permanent target box at same target box location
-    //   Boxes must track characters when window is resized
-    // Make dropdown disappear
-    // Show that char was foudn in level header using visual cue
-    // Show notification box with success message
+    console.log(targetingBoxArr);
+    if (isCharInTargetBox(characterInt)) {
+      let newTargetingBoxArr = [...targetingBoxArr];
+      newTargetingBoxArr.at(-1).isCorrect = true;
+      newTargetingBoxArr.at(-1).character = `character-${characterInt}`;
+      setTargetingBoxArr(newTargetingBoxArr);
+
+      // visual cue of correct choice in level header
+      const charImgElem = document.querySelector(`.character-${characterInt}-img`);
+      charImgElem.style.opacity = '0.1';
+
+      // show notification box
+      showNotificationBox('You found one!', true);
+
+      // check if all characters have been found
+      if (newTargetingBoxArr.length === charCoordsRef.current.length) {
+        // pop up the leaderboard name entry form
+
+      }
+    } else {
+      showNotificationBox('Not quite, keep looking!', false);
+    }
+    adjustTargetingBox(); // normally requires 'e' arg but not for removing boxes
+  }
+  const showNotificationBox = (msg, isCorrect) => {
+    const notifBoxElem = document.querySelector('.notification-box');
+    const notifTextElem = document.querySelector('.notification-text');
+    if (isCorrect) {
+      notifTextElem.style.border = '2px solid green';
+      notifTextElem.style['box-shadow'] = '0 0 0 2px green';
+    } else {
+      notifTextElem.style.border = '2px solid red';
+      notifTextElem.style['box-shadow'] = '0 0 0 2px red';
+    }
+    notifTextElem.textContent = msg;
+    notifBoxElem.style.visibility = 'visible';
+    notifBoxElem.style.opacity = '1';
+    notifBoxElem.style.animation = 'none';
+    notifBoxElem.style.animation = 'popInFadeOut 4s linear forwards';
+    const timeoutID = setTimeout(() => {
+      // notifBoxElem.classList.remove('.display-notification-box');
+      notifBoxElem.style.animation = 'none';
+      notifBoxElem.style.visibility = 'hidden';
+      console.log('ready to do again');
+      clearInterval(timeoutID);
+    }, 4000);
+  }
+  const timeStrRef = useRef('');
+  const fetchTimeStrCallback = (timeStr) => {
+    timeStrRef.current = timeStr;
   }
 
   return (
@@ -279,12 +372,14 @@ function Level() {
         <div className="level-container">
           <div className="level-header">
             <h3 className="level-title">{`${levelObj.level}: ${levelObj.title}`}</h3>
-            <Timer />
+            <Timer 
+              fetchTimeStrCallback={fetchTimeStrCallback}
+            />
             <div className="target-images-container">
               Find these:
-              <img className="character-img" src={characterImgArray[0]} alt="Character 1" draggable="false" />
-              <img className="character-img" src={characterImgArray[1]} alt="Character 2" draggable="false" />
-              <img className="character-img" src={characterImgArray[2]} alt="Character 3" draggable="false" />
+              <img className="character-img character-1-img" src={characterImgArray[0]} alt="Character 1" draggable="false" />
+              <img className="character-img character-2-img" src={characterImgArray[1]} alt="Character 2" draggable="false" />
+              <img className="character-img character-3-img" src={characterImgArray[2]} alt="Character 3" draggable="false" />
             </div>
           </div>
         </div>
@@ -303,6 +398,18 @@ function Level() {
         charactersObj={levelObj.characters === undefined ? {} : levelObj.characters}
         menuItemClickCallback={handleMenuItemClickCallback}
       />
+      <div className="add-to-leaderboard-box">
+        <p>You win!</p>
+        <p>Your time was: {timeStrRef.current}</p>
+        <p>Add your name to the leaderboard:</p>
+        <input 
+          type="text" 
+          className="leaderboard-name-input"
+          placeholder="Type your name"
+        >
+        </input>
+        <button className="go-home-button" onClick={handleGoHomeClick}>Go back home</button>
+      </div>
     </div>
   );
 }
