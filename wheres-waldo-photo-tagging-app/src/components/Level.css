@@ -1,6 +1,7 @@
 :root {
   --closest-foreground-z-index: 2;
-
+  --dark-bg-color-opacity-1: rgb(64, 64, 64);
+  --translucent-grey-border-color: rgba(255, 255, 255, 0.523);
   overflow-x: hidden;
 }
 
@@ -37,7 +38,7 @@
   /* right: 10px; */
   position: fixed;
   color: white;
-  background-color: rgb(64, 64, 64);
+  background-color: var(--dark-bg-color-opacity-1);
   display: grid;
   grid-template-columns: repeat(3, max-content);
   justify-content: space-between;
@@ -78,7 +79,7 @@
   width: max-content;
   padding: 10px 20px;
   color: white;
-  background-color: rgb(64, 64, 64);
+  background-color: var(--dark-bg-color-opacity-1);
   border: 2px solid red;
   box-shadow: 0 0 0 2px red;
   border-radius: 10px;
@@ -95,7 +96,7 @@
   width: 50px;
   height: 50px;
   background-color: rgba(89, 89, 89, 0.626);
-  border: 2px solid rgba(255, 255, 255, 0.523);
+  border: 2px solid var(--translucent-grey-border-color);
   border-radius: 50%;;
 }
 .targeting-box.valid-box {
@@ -110,7 +111,7 @@
   z-index: 1;
   color: white;
   background-color: rgba(89, 89, 89, 0.873);
-  border: 2px solid rgba(255, 255, 255, 0.523);
+  border: 2px solid var(--translucent-grey-border-color);
   border-radius: 10px;
 
   grid-template-rows: repeat(3, 1fr);
@@ -129,4 +130,52 @@
 
 .add-to-leaderboard-box {
   visibility: hidden;
+  padding: 30px 60px;
+  width: max-content;
+  height: 30%;
+  min-height: 200px;
+  color: white;
+  background-color: var(--dark-bg-color-opacity-1);
+  border: 2px solid var(--translucent-grey-border-color);
+  border-radius: 20px;
+  font-size: 20px;
+
+  /* z-index: calc(var(--closest-foreground-z-index) + 1); */
+  z-index: 3;
+  position: fixed;
+  top: 20vh;
+  /* left: 20vw; */
+  left: calc(-50vw + 50%);
+  right: calc(-50vw + 50%);
+  margin-left: auto;
+  margin-right: auto;
+  display: grid;
+  grid-template-rows: 1fr 1fr 2fr 2fr 1fr;
+  text-align: center;
+}
+.add-your-name-text {
+  align-self: end;
+}
+/* .leaderboard-input-container */
+form.name-input-form {
+  display: grid;
+  grid-template-columns: 9fr 1fr;
+  gap: 5px;
+  align-content: center;
+  align-items: center;
+}
+input.leaderboard-name-input {
+  /* width: 100%; */
+  height: 40px;
+  padding: 5px 10px;
+  border-radius: 10px;
+}
+.add-to-leaderboard-button {
+  padding: 5px 5px;
+  max-height: 30px;
+}
+.leaderboard-go-home-button {
+  width: max-content;
+  padding: 3px 10px;
+  place-self: center;
 }

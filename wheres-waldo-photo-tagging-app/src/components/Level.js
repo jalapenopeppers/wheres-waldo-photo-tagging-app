@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 
 // Firebase
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../index.js';
 
 import Timer from './Timer';
@@ -206,10 +206,13 @@ function Level() {
 
   const navigate = useNavigate();
   const handleGoHomeClick = () => navigate('/');
+  const canClickBGImg = useRef(true);
   const handleLevelImgClick = (e) => {
-    let imgCoords = getImgPos(e);
-    console.log(`Click location in img pixels: ${imgCoords.imgX}, ${imgCoords.imgY}`);
-    adjustTargetingBox(e);
+    if (canClickBGImg.current) {
+      let imgCoords = getImgPos(e);
+      console.log(`Click location in img pixels: ${imgCoords.imgX}, ${imgCoords.imgY}`);
+      adjustTargetingBox(e);
+    }
   }
 
   // Gets coordinates of point clicked on within the level image
@@ -308,21 +311,40 @@ function Level() {
     console.log(targetingBoxArr);
     if (isCharInTargetBox(characterInt)) {
       let newTargetingBoxArr = [...targetingBoxArr];
-      newTargetingBoxArr.at(-1).isCorrect = true;
-      newTargetingBoxArr.at(-1).character = `character-${characterInt}`;
-      setTargetingBoxArr(newTargetingBoxArr);
+      // Check if new targeting box is targeting a character that was already picked
+      // If it is a duplicate, then don't flag it as correct--it will get removed by a different function
+      let characterID = `character-${characterInt}`;
+      let lastChoiceIsDup = false;
+      for (let i = 0; i < newTargetingBoxArr.length - 1; i++) {
+        if (newTargetingBoxArr[i].character === characterID) {
+          lastChoiceIsDup = true;
+        }
+      }
+      if (!lastChoiceIsDup) {
+        newTargetingBoxArr.at(-1).isCorrect = true;
+        newTargetingBoxArr.at(-1).character = `character-${characterInt}`;
+        setTargetingBoxArr(newTargetingBoxArr);
 
-      // visual cue of correct choice in level header
-      const charImgElem = document.querySelector(`.character-${characterInt}-img`);
-      charImgElem.style.opacity = '0.1';
+        // visual cue of correct choice in level header
+        const charImgElem = document.querySelector(`.character-${characterInt}-img`);
+        charImgElem.style.opacity = '0.1';
 
-      // show notification box
-      showNotificationBox('You found one!', true);
+        // show notification box
+        showNotificationBox('You found one!', true);
 
-      // check if all characters have been found
-      if (newTargetingBoxArr.length === charCoordsRef.current.length) {
-        // pop up the leaderboard name entry form
-
+        // check if all characters have been found
+        if (newTargetingBoxArr.length === Object.keys(charCoordsRef.current).length) {
+          // Disable clicking on bg image
+          canClickBGImg.current = false;
+          // pop up the leaderboard name entry form
+          const leaderboardBox = document.querySelector('.add-to-leaderboard-box');
+          leaderboardBox.style.visibility = 'visible';
+          // blur background behind the popup
+          const elemArr = document.querySelectorAll('.Level > *:not(.add-to-leaderboard-box)');
+          for (let i = 0; i < elemArr.length; i++) {
+            elemArr[i].style.filter = 'blur(3px)';
+          }
+        }
       }
     } else {
       showNotificationBox('Not quite, keep looking!', false);
@@ -355,6 +377,29 @@ function Level() {
   const timeStrRef = useRef('');
   const fetchTimeStrCallback = (timeStr) => {
     timeStrRef.current = timeStr;
+  }
+  // This function handles adding a player's name and time to the fireStore leaderboard
+  // The function is run once a player has typed a name and clicked the "add" button
+  async function handleAddToLeaderboardClick (e) {
+    e.preventDefault();
+    const nameInputElem = document.querySelector('input.leaderboard-name-input');
+    const playerName = nameInputElem.value;
+    if (playerName !== '') {
+      // Send time to fireStore leaderboard
+      const docRef = doc(db, `/levels/${levelObj.levelID}/leaderboard/leaderboard-entries`);
+      let leaderboardObj = {};
+      leaderboardObj[playerName] = timeStrRef.current;
+      const setDocResult = await setDoc(docRef, leaderboardObj, { merge: true });
+      if (setDocResult === undefined) {
+        console.log(setDocResult);
+        // Doc was updated successfully, redirect to the level's leaderboard page
+        navigate(`/leaderboards/${levelID}`);
+      } else {
+        // Doc was not updated successfully, log error in console
+        console.error('Document update failed');
+      }
+    }
+    
   }
 
   return (
@@ -401,14 +446,19 @@ function Level() {
       <div className="add-to-leaderboard-box">
         <p>You win!</p>
         <p>Your time was: {timeStrRef.current}</p>
-        <p>Add your name to the leaderboard:</p>
-        <input 
-          type="text" 
-          className="leaderboard-name-input"
-          placeholder="Type your name"
-        >
-        </input>
-        <button className="go-home-button" onClick={handleGoHomeClick}>Go back home</button>
+        <p className="add-your-name-text">Add your name to the leaderboard:</p>
+        <div className="leaderboard-input-container">
+          <form className="name-input-form">
+            <input
+              type="text"
+              className="leaderboard-name-input"
+              placeholder="Type your name"
+              required
+            />
+          <button className="add-to-leaderboard-button" onClick={handleAddToLeaderboardClick}>Add</button>
+          </form>
+        </div>
+        <button className="leaderboard-go-home-button" onClick={handleGoHomeClick}>Go back home</button>
       </div>
     </div>
   );
