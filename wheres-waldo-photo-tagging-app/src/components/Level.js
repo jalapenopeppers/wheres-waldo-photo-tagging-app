@@ -58,15 +58,22 @@ async function importCharacterImages(levelID) {
 }
 
 /*
-  Gets character coords from fireStore given a levelObj
-  Returns object with each character's coords in the image
+  Gets character coords and img base coords from fireStore given a levelObj
+  Returns object with each character's coords in the image and the img's base coords
+    (used for window resizing calculations)
   */ 
-async function importCharacterCoords(levelObj) {
-  const docRef = doc(db, `/levels/${levelObj.levelID}/characters/characters-coords`);
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    console.log("Document data:", docSnap.data());
-    return await docSnap.data();
+async function importCoords(levelObj) {
+  const docRefCharCoords = doc(db, `/levels/${levelObj.levelID}/characters/characters-coords`);
+  const docSnapCharCoords = await getDoc(docRefCharCoords);
+  const docRefImgBaseCoords = doc(db, `/levels/${levelObj.levelID}/characters/level-img-base-size`);
+  const docSnapImgBaseCoords = await getDoc(docRefImgBaseCoords);
+  if (docSnapCharCoords.exists() && docSnapImgBaseCoords.exists()) {
+    console.log("Document data:", docSnapCharCoords.data(), docSnapImgBaseCoords.data());
+    return await {
+      'img-base-coords': docSnapImgBaseCoords.data(),
+      'char-coords': docSnapCharCoords.data()
+    };
+
   } else {
     // doc.data() will be undefined in this case
     console.log("No such document!");
@@ -89,6 +96,7 @@ function Level() {
   const [levelImg, setLevelImg] = useState('');
   const [characterImgArray, setCharacterImgArray] = useState([]);
   const [levelObj, setLevelObj] = useState({});
+  const imgBaseCoordsRef = useRef([]);
   const [charactersCoords, _setCharactersCoords] = useState({});
   const fireStoreCharCoordsRef = useRef(charactersCoords); // Stores initial coords from fireStore, should not change after initialization
   const charCoordsRef = useRef(charactersCoords);
@@ -102,11 +110,15 @@ function Level() {
       .then((obj) => {
         console.log(obj);
         setLevelObj(obj);
-        const charCoords = importCharacterCoords(obj);
+        const charCoords = importCoords(obj);
         charCoords.then((coordsObj) => {
-          setCharactersCoords(coordsObj)
-          fireStoreCharCoordsRef.current = coordsObj;
-          console.log(`coordsObj['character-1'] from fireStore: ${coordsObj['character-1']}`);
+          const imgBaseCoords = coordsObj['img-base-coords'];
+          imgBaseCoordsRef.current = imgBaseCoords;
+
+          const charCoords = coordsObj['char-coords'];
+          setCharactersCoords(charCoords)
+          fireStoreCharCoordsRef.current = charCoords;
+          console.log(`coordsObj['character-1'] from fireStore: ${charCoords['character-1']}`);
           return importLevelImage(obj.levelID);
         })
         .then((img) => {
@@ -146,9 +158,10 @@ function Level() {
       let oldImgX = fireStoreCharCoordsRef.current[`character-${i}`][0];
       let oldImgY = fireStoreCharCoordsRef.current[`character-${i}`][1];
       // console.log(`oldImgX: ${oldImgX}, oldImgY:${oldImgY}`);
+      console.warn(imgBaseCoordsRef.current);
       newCharactersCoords[`character-${i}`] = [
-        oldImgX.map(0, 699, 0, newWidth), // 699 is img width in browser when coords were recorded to firebase
-        oldImgY.map(0, 1375, 0, newHeight) // 1375 is img height in browser when coords were recorded to firebase
+        oldImgX.map(0, imgBaseCoordsRef.current['base-size'][0], 0, newWidth), // imgBaseCoordsRef...[0] is img width in browser when coords were recorded to firebase
+        oldImgY.map(0, imgBaseCoordsRef.current['base-size'][1], 0, newHeight) // imgBaseCoordsRef...[1] is img height in browser when coords were recorded to firebase
       ]
     }
     console.log('---------------------');
@@ -336,6 +349,8 @@ function Level() {
         if (newTargetingBoxArr.length === Object.keys(charCoordsRef.current).length) {
           // Disable clicking on bg image
           canClickBGImg.current = false;
+          // Get the finish time and save it
+          finishedTimeStrRef.current = timeStrRef.current;
           // pop up the leaderboard name entry form
           const leaderboardBox = document.querySelector('.add-to-leaderboard-box');
           leaderboardBox.style.visibility = 'visible';
@@ -374,6 +389,7 @@ function Level() {
       clearInterval(timeoutID);
     }, 4000);
   }
+  const finishedTimeStrRef = useRef('');
   const timeStrRef = useRef('');
   const fetchTimeStrCallback = (timeStr) => {
     timeStrRef.current = timeStr;
@@ -388,7 +404,7 @@ function Level() {
       // Send time to fireStore leaderboard
       const docRef = doc(db, `/levels/${levelObj.levelID}/leaderboard/leaderboard-entries`);
       let leaderboardObj = {};
-      leaderboardObj[playerName] = timeStrRef.current;
+      leaderboardObj[playerName] = finishedTimeStrRef.current;
       const setDocResult = await setDoc(docRef, leaderboardObj, { merge: true });
       if (setDocResult === undefined) {
         console.log(setDocResult);
@@ -445,7 +461,7 @@ function Level() {
       />
       <div className="add-to-leaderboard-box">
         <p>You win!</p>
-        <p>Your time was: {timeStrRef.current}</p>
+        <p>Your time was: {finishedTimeStrRef.current}</p>
         <p className="add-your-name-text">Add your name to the leaderboard:</p>
         <div className="leaderboard-input-container">
           <form className="name-input-form">
