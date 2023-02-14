@@ -1,0 +1,40 @@
+.Leaderboard {
+  height: 311px;
+  max-height: 311px;
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* overflow-y: scroll; */
+  /* overflow: hidden; */
+}
+
+.leaderboard-title-text {
+  padding-left: 20px;
+}
+
+.leaderboard-entries {
+  height: calc(100% - 37px);
+  overflow-y: scroll;
+  /* overflow: hidden; */
+}
+
+.leaderboard-entry {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  justify-content: stretch;
+  gap: 10vw;
+  border: 1px solid grey;
+  border-width: 0px 0px 1px 0px;
+}
+.leaderboard-entry:hover {
+  background-color: rgb(176, 176, 176);
+}
+
+.rank {
+  width: 50px;
+  text-align: center;
+}
+
+.leaderboard-empty-message {
+  padding: 30px;
+}
