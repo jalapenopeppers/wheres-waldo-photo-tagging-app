@@ -71,30 +71,32 @@ function Leaderboards() {
   }
 
   return (
-    <div className="Leaderboards">
-      <div className="selected-level-card-container">
-        <div className="level-preview-container">
-          {renderLevelPreview()}
+    <div className="leaderboards-container">
+      <div className="Leaderboards">
+        <div className="selected-level-card-container">
+          <div className="level-preview-container">
+            {renderLevelPreview()}
+          </div>
         </div>
-      </div>
-      <div className="level-cards-container">
-        {currState === 'loading' ? (
-            <h3>loading...</h3>
-          ) : (
-            levelsArray.map(obj => (
-              <div key={obj.levelID} className="level-grid-card" onClick={() => handleLevelSelectClick(obj.levelID)}>
-                <img 
-                  className="level-grid-card-img"
-                  src={obj.imgSrc}
-                  alt="Level card"
-                />
-                <p className="level-grid-card-text">{`${obj.level}: ${obj.title}`}</p>
-              </div>
-            ))
-          )}
-      </div>
-      <div className="leaderboard-container">
-        <Outlet />
+        <div className="level-cards-container">
+          {currState === 'loading' ? (
+              <h3>loading...</h3>
+            ) : (
+              levelsArray.map(obj => (
+                <div key={obj.levelID} className="level-grid-card" onClick={() => handleLevelSelectClick(obj.levelID)}>
+                  <img
+                    className="level-grid-card-img"
+                    src={obj.imgSrc}
+                    alt="Level card"
+                  />
+                  <p className="level-grid-card-text">{`${obj.level}: ${obj.title}`}</p>
+                </div>
+              ))
+            )}
+        </div>
+        <div className="leaderboard-container">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

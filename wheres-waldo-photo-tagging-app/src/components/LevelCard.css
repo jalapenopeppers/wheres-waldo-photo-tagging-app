@@ -1,10 +1,28 @@
 .LevelCard {
   width: 90%;
   height: 100%;
-  border: 1px solid black;
+  max-height: 60vh;
+  border: 1px solid var(--translucent-grey-border-color);
+  border-radius: 10px;
+  background-color: rgb(55, 55, 55);
+  box-shadow: 4px 4px 6px black;
+  /* box-shadow: -4px -4px 2px black; */
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: 9fr 1fr;
+}
+.LevelCard:hover {
+  cursor: pointer;
 }
 
 .level-card-photo-preview {
   width: 100%;
-  height: auto;
+  height: 100%;
+  overflow: hidden;
+  object-fit: cover;
+}
+
+.level-title-text {
+  padding: 10px 0;
+  text-align: center;
 }

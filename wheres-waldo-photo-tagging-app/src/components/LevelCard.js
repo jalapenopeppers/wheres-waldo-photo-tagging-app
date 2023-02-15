@@ -25,7 +25,7 @@ function LevelCard({ levelObj }) {
         src={imgSrc}
         alt= 'Level preview'
       />
-      <h4>{level}: {title} ({difficulty})</h4>
+      <h4 className="level-title-text">{level}: {title} ({difficulty})</h4>
     </div>
   );
 }

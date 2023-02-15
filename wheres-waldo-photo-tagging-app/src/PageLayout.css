@@ -3,6 +3,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: var(--darker-bg-color);
+  box-shadow: 0 2px black;
+  position: sticky;
+  top: 0;
 }
 
 .nav-buttons-container {

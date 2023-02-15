@@ -1,4 +1,16 @@
+:root {
+  --dark-bg-color: rgb(43, 43, 43);
+  --darker-bg-color: rgb(29, 29, 29);
+  --closest-foreground-z-index: 2;
+  --translucent-grey-border-color: rgba(255, 255, 255, 0.523);
+}
+
 * {
   margin: 0;
   padding: 0;
+}
+
+body {
+  color: white;
+  background-color: var(--dark-bg-color);
 }

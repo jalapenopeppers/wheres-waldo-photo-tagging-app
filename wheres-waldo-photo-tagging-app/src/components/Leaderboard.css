@@ -1,20 +1,24 @@
-.Leaderboard {
+/* .Leaderboard {
   height: 311px;
   max-height: 311px;
-  /* display: flex; */
-  /* flex-direction: column; */
-  /* overflow-y: scroll; */
-  /* overflow: hidden; */
-}
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 311px;
+  overflow-y: scroll;
+  overflow: hidden;
+} */
 
 .leaderboard-title-text {
   padding-left: 20px;
 }
 
 .leaderboard-entries {
-  height: calc(100% - 37px);
-  overflow-y: scroll;
-  /* overflow: hidden; */
+  /* height: calc(100% - 37px); */
+  max-height: 350px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 200px;
 }
 
 .leaderboard-entry {
