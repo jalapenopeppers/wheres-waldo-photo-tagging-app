@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkwheres_waldo_photo_tagging_app=self.webpackChunkwheres_waldo_photo_tagging_app||[]).push([[567],{567:function(e,a,r){r.r(a),r.d(a,{LevelObj:function(){return t}});var t={level:"Level 2",title:"Gamer Dungeon",difficulty:"Easy",description:"Find the 3 characters in these gamers' dungeon.",levelID:"level-2",characters:{character1Name:"Ghosty",character2Name:"Roger",character3Name:"Taran Tarantula"}}}}]);
+//# sourceMappingURL=567.0047c80f.chunk.js.map
