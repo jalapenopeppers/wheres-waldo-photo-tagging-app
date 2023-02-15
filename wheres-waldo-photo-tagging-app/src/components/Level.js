@@ -131,18 +131,13 @@ function Level() {
           setCurrState('done');
           console.log('promise chain done');
         });
-        // return importLevelImage(obj.levelID);
         })
-      // .then((img) => {
-      //   // console.log(img.default);
-      //   setLevelImg(img.default);
-      //   return importCharacterImages(levelID);
-      // })
-      // .then((characterImgArray) => {
-      //   setCharacterImgArray(characterImgArray);
-      //   setCurrState('done');
-      // });
   }, []);
+  useEffect(() => {
+    // Recalculate coords on mount after render in case current resolution is different from 
+    //   resolution at which coords were first captured for the characters
+    if (currState === 'done') recalcCharCoords();
+  }, [currState]);
 
   // Recalculates character coords after window is resized
   const recalcCharCoords = () => {
