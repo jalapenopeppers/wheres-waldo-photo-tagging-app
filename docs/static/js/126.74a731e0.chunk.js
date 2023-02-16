@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkwheres_waldo_photo_tagging_app=self.webpackChunkwheres_waldo_photo_tagging_app||[]).push([[126],{126:function(e,a,t){t.r(a),t.d(a,{LevelObj:function(){return r}});var r={level:"Level 4",title:"Seaside Metropolis",difficulty:"Hard",description:"Find the 3 characters in this large seaside metropolis.",levelID:"level-4",characters:{character1Name:"Bozo the Monkey",character2Name:"Lil Timmy",character3Name:"Nigel"}}}}]);
-//# sourceMappingURL=126.74a731e0.chunk.js.map

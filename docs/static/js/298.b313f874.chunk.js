@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkwheres_waldo_photo_tagging_app=self.webpackChunkwheres_waldo_photo_tagging_app||[]).push([[298],{298:function(e,a,t){t.r(a),t.d(a,{LevelObj:function(){return c}});var c={level:"Level 1",title:"Busy City",difficulty:"Easy",description:"Find the 3 characters in this busy city.",levelID:"level-1",characters:{character1Name:"Jackson",character2Name:"Bored Steve",character3Name:"Roy"}}}}]);
-//# sourceMappingURL=298.b313f874.chunk.js.map

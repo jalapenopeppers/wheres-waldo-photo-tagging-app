@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkwheres_waldo_photo_tagging_app=self.webpackChunkwheres_waldo_photo_tagging_app||[]).push([[761],{761:function(e,p,a){e.exports=a.p+"static/media/level-1-photo.cb41dc76ee2a7809749d.jpg"}}]);

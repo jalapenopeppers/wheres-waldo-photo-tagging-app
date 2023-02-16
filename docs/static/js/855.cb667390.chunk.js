@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkwheres_waldo_photo_tagging_app=self.webpackChunkwheres_waldo_photo_tagging_app||[]).push([[855],{855:function(e,a,t){t.r(a),t.d(a,{LevelObj:function(){return c}});var c={level:"Level 3",title:"Space Park",difficulty:"Medium",description:"Find the 3 characters in this space park.",levelID:"level-3",characters:{character1Name:"Lizzy",character2Name:"Natasha",character3Name:"Space Boy"}}}}]);
-//# sourceMappingURL=855.cb667390.chunk.js.map

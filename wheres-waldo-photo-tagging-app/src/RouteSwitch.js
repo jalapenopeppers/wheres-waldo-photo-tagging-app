@@ -8,8 +8,8 @@ import Level from "./components/Level";
 
 const RouteSwitch = () => {
   return (
-    <BrowserRouter>
-      <HashRouter basename="/">
+    // <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/" element={<PageLayout />}>
             <Route index element={<Home />} />
@@ -21,7 +21,7 @@ const RouteSwitch = () => {
           <Route path=":levelID" element={<Level />} />
         </Routes>
       </HashRouter>
-    </BrowserRouter>
+    // </BrowserRouter>
   );
 };
 

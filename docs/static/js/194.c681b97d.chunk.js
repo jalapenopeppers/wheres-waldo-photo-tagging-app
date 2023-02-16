@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkwheres_waldo_photo_tagging_app=self.webpackChunkwheres_waldo_photo_tagging_app||[]).push([[194],{194:function(e,a,t){t.r(a),t.d(a,{LevelObj:function(){return l}});var l={level:"Level 5",title:"Anabuki Design College",difficulty:"Hard",description:"Find the 3 characters in the Anabuki Design College.",levelID:"level-5",characters:{character1Name:"Imposter Waldo",character2Name:"Barney",character3Name:"Scientist Sally"}}}}]);
-//# sourceMappingURL=194.c681b97d.chunk.js.map
